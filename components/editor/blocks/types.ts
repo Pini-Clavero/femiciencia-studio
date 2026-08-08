@@ -1,3 +1,9 @@
+export type TextLink = {
+  id: string;
+  text: string;
+  url: string;
+};
+
 export type BlockType =
   | "heading"
   | "paragraph"

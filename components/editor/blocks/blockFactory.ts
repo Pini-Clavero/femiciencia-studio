@@ -14,13 +14,14 @@ export function createBlock(type: BlockType): NewsletterBlock {
       };
 
     case "paragraph":
-      return {
-        id,
-        type,
-        props: {
-          text: "Escribí aquí el contenido de tu newsletter.",
-        },
-      };
+  return {
+    id,
+    type,
+    props: {
+      text: "Escribí aquí el contenido de tu newsletter.",
+      links: [],
+    },
+  };
 
     case "divider":
       return {
@@ -30,15 +31,16 @@ export function createBlock(type: BlockType): NewsletterBlock {
       };
 
     case "quote":
-      return {
-        id,
-        type,
-        props: {
-          text: "Escribí aquí una cita.",
-          author: "Autor",
-        },
-      };
-      
+  return {
+    id,
+    type,
+    props: {
+      text: "Escribí aquí una cita.",
+      author: "Autor",
+      links: [],
+    },
+  };
+
       case "image":
       return {
         id,

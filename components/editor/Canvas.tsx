@@ -50,8 +50,11 @@ export default function Canvas({
                             )}
 
                             {block.type === "paragraph" && (
-                                <ParagraphBlock text={block.props.text} />
-                            )}
+  <ParagraphBlock
+    text={block.props.text}
+    links={block.props.links}
+  />
+)}
 
                             {block.type === "divider" && <DividerBlock />}
 
