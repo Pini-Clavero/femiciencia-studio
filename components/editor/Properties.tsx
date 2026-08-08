@@ -1,11 +1,16 @@
 type PropertiesProps = {
   selectedBlockId: string | null;
   blocks: any[];
+  updateBlock: (
+    blockId: string,
+    updatedProps: Record<string, any>
+  ) => void;
 };
 
 export default function Properties({
   selectedBlockId,
   blocks,
+  updateBlock,
 }: PropertiesProps) {
   const selectedBlock = blocks.find(
     (block) => block.id === selectedBlockId
@@ -25,13 +30,23 @@ export default function Properties({
 
       {selectedBlock?.type === "heading" && (
         <div>
-          <p className="mb-2 text-sm font-medium">
+          <label
+            htmlFor="heading-text"
+            className="mb-2 block text-sm font-medium"
+          >
             Título
-          </p>
+          </label>
 
-          <p className="text-sm text-gray-500">
-            {selectedBlock.props.text}
-          </p>
+          <textarea
+            id="heading-text"
+            value={selectedBlock.props.text}
+            onChange={(event) =>
+              updateBlock(selectedBlock.id, {
+                text: event.target.value,
+              })
+            }
+            className="min-h-[100px] w-full resize-none rounded-lg border border-gray-200 p-3 text-sm outline-none transition focus:border-gray-400"
+          />
         </div>
       )}
     </aside>

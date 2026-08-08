@@ -21,6 +21,27 @@ export default function EditorPage() {
 
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
+  const updateBlock = (
+    blockId: string,
+    updatedProps: Record<string, any>
+  ) => {
+    setBlocks((currentBlocks) =>
+      currentBlocks.map((block) => {
+        if (block.id !== blockId) {
+          return block;
+        }
+
+        return {
+          ...block,
+          props: {
+            ...block.props,
+            ...updatedProps,
+          },
+        };
+      })
+    );
+  };
+
   return (
     <div className="flex h-screen flex-col bg-[#F8F8F7]">
       <Header />
@@ -37,6 +58,7 @@ export default function EditorPage() {
         <Properties
           selectedBlockId={selectedBlockId}
           blocks={blocks}
+          updateBlock={updateBlock}
         />
       </main>
 
