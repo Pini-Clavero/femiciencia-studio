@@ -34,7 +34,10 @@ export default function EditorPage() {
           setSelectedBlockId={setSelectedBlockId}
         />
 
-        <Properties />
+        <Properties
+          selectedBlockId={selectedBlockId}
+          blocks={blocks}
+        />
       </main>
 
       <StatusBar />
