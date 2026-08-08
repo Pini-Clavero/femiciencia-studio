@@ -38,20 +38,51 @@ export default function EditorPage() {
   };
 
   const addBlock = (
-  type: "heading" | "paragraph" | "divider" | "quote" | "image" | "double-image" | "text-image"
-) => {
+    type:
+      | "heading"
+      | "paragraph"
+      | "divider"
+      | "quote"
+      | "image"
+      | "double-image"
+      | "text-image",
+    afterBlockId?: string
+  ) => {
     const newBlock = createBlock(type);
 
-    setBlocks((currentBlocks) => [
-      ...currentBlocks,
-      newBlock,
-    ]);
+    setBlocks((currentBlocks) => {
+      // Si no indicamos un bloque de referencia,
+      // agregamos el nuevo bloque al final.
+      if (!afterBlockId) {
+        return [...currentBlocks, newBlock];
+      }
+
+      // Buscamos la posición del bloque después
+      // del cual queremos insertar el nuevo bloque.
+      const blockIndex = currentBlocks.findIndex(
+        (block) => block.id === afterBlockId
+      );
+
+      // Si no encontramos el bloque de referencia,
+      // mantenemos el comportamiento anterior.
+      if (blockIndex === -1) {
+        return [...currentBlocks, newBlock];
+      }
+
+      // Insertamos el nuevo bloque inmediatamente
+      // después del bloque de referencia.
+      return [
+        ...currentBlocks.slice(0, blockIndex + 1),
+        newBlock,
+        ...currentBlocks.slice(blockIndex + 1),
+      ];
+    });
 
     setSelectedBlockId(newBlock.id);
   };
 
   return (
-    <div className="flex h-screen flex-col bg-[#F8F8F7]">
+    <div className="flex min-h-screen flex-col">
       <Header />
 
       <main className="flex flex-1 overflow-hidden">
