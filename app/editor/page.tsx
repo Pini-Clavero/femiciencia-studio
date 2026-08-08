@@ -19,6 +19,8 @@ export default function EditorPage() {
     },
   ]);
 
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+
   return (
     <div className="flex h-screen flex-col bg-[#F8F8F7]">
       <Header />
@@ -26,7 +28,11 @@ export default function EditorPage() {
       <main className="flex flex-1 overflow-hidden">
         <Sidebar />
 
-        <Canvas blocks={blocks} />
+        <Canvas
+          blocks={blocks}
+          selectedBlockId={selectedBlockId}
+          setSelectedBlockId={setSelectedBlockId}
+        />
 
         <Properties />
       </main>
