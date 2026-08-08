@@ -57,7 +57,9 @@ export default function ParagraphBlock({
   };
 
   return (
-    <p className="text-base leading-7 text-gray-700">
+    <p className="text-base leading-7 text-gray-700"
+    style={{ overflowWrap: "anywhere" }}
+    >
       {renderText()}
     </p>
   );

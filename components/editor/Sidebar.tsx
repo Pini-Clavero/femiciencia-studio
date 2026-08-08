@@ -4,14 +4,18 @@ type SidebarProps = {
     onAddDivider: () => void;
     onAddQuote: () => void;
     onAddImage: () => void;
+    onAddDoubleImage: () => void;
+    onAddTextImage: () => void;
 };
 
 export default function Sidebar({
-  onAddHeading,
-  onAddParagraph,
-  onAddDivider,
-  onAddQuote,
-  onAddImage,
+    onAddHeading,
+    onAddParagraph,
+    onAddDivider,
+    onAddQuote,
+    onAddImage,
+    onAddDoubleImage,
+    onAddTextImage,
 }: SidebarProps) {
     return (
         <aside className="w-72 border-r bg-white p-6">
@@ -76,14 +80,16 @@ export default function Sidebar({
 
                         <button
                             type="button"
-                            className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-left text-sm text-gray-400"
+                            onClick={onAddDoubleImage}
+                            className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-left text-sm transition hover:bg-gray-50"
                         >
                             Imagen doble
                         </button>
 
                         <button
                             type="button"
-                            className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-left text-sm text-gray-400"
+                            onClick={onAddTextImage}
+                            className="block w-full rounded-lg border border-gray-200 px-4 py-3 text-left text-sm transition hover:bg-gray-50"
                         >
                             Texto + Imagen
                         </button>

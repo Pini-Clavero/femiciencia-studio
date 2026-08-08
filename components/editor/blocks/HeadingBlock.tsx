@@ -6,8 +6,11 @@ export default function HeadingBlock({
   text,
 }: HeadingBlockProps) {
   return (
-    <h1 className="text-4xl font-bold">
-      {text}
-    </h1>
+    <h1
+  className="break-words text-4xl font-bold"
+  style={{ overflowWrap: "anywhere" }}
+>
+  {text}
+</h1>
   );
 }

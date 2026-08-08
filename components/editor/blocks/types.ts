@@ -9,7 +9,9 @@ export type BlockType =
   | "paragraph"
   | "divider"
   | "quote"
-  | "image";
+  | "image"
+  | "double-image"
+  | "text-image";
 
 export type NewsletterBlock = {
   id: string;

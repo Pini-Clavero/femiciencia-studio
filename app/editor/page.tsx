@@ -38,7 +38,7 @@ export default function EditorPage() {
   };
 
   const addBlock = (
-  type: "heading" | "paragraph" | "divider" | "quote" | "image"
+  type: "heading" | "paragraph" | "divider" | "quote" | "image" | "double-image" | "text-image"
 ) => {
     const newBlock = createBlock(type);
 
@@ -61,6 +61,8 @@ export default function EditorPage() {
           onAddDivider={() => addBlock("divider")}
           onAddQuote={() => addBlock("quote")}
           onAddImage={() => addBlock("image")}
+          onAddDoubleImage={() => addBlock("double-image")}
+          onAddTextImage={() => addBlock("text-image")}
         />
 
         <Canvas

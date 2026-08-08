@@ -313,6 +313,236 @@ export default function Properties({
                     </div>
                 </div>
             )}
+            {selectedBlock?.type === "double-image" && (
+                <div className="space-y-8">
+                    <div>
+                        <h3 className="mb-4 text-sm font-semibold text-gray-700">
+                            Imagen izquierda
+                        </h3>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label
+                                    htmlFor="double-image-left"
+                                    className="mb-2 block text-xs font-medium text-gray-500"
+                                >
+                                    Imagen
+                                </label>
+
+                                <input
+                                    id="double-image-left"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(event) => {
+                                        const file = event.target.files?.[0];
+
+                                        if (!file) {
+                                            return;
+                                        }
+
+                                        const imageUrl = URL.createObjectURL(file);
+
+                                        updateBlock(selectedBlock.id, {
+                                            leftSrc: imageUrl,
+                                        });
+                                    }}
+                                    className="w-full text-sm"
+                                />
+                            </div>
+
+                            <div>
+                                <label
+                                    htmlFor="double-image-left-caption"
+                                    className="mb-2 block text-xs font-medium text-gray-500"
+                                >
+                                    Pie de imagen
+                                </label>
+
+                                <textarea
+                                    id="double-image-left-caption"
+                                    value={selectedBlock.props.leftCaption}
+                                    onChange={(event) =>
+                                        updateBlock(selectedBlock.id, {
+                                            leftCaption: event.target.value,
+                                        })
+                                    }
+                                    placeholder="Información sobre la imagen..."
+                                    className="min-h-[80px] w-full resize-none rounded-lg border border-gray-200 p-3 text-sm leading-6 outline-none transition focus:border-gray-400"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-8">
+                        <h3 className="mb-4 text-sm font-semibold text-gray-700">
+                            Imagen derecha
+                        </h3>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label
+                                    htmlFor="double-image-right"
+                                    className="mb-2 block text-xs font-medium text-gray-500"
+                                >
+                                    Imagen
+                                </label>
+
+                                <input
+                                    id="double-image-right"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(event) => {
+                                        const file = event.target.files?.[0];
+
+                                        if (!file) {
+                                            return;
+                                        }
+
+                                        const imageUrl = URL.createObjectURL(file);
+
+                                        updateBlock(selectedBlock.id, {
+                                            rightSrc: imageUrl,
+                                        });
+                                    }}
+                                    className="w-full text-sm"
+                                />
+                            </div>
+
+                            <div>
+                                <label
+                                    htmlFor="double-image-right-caption"
+                                    className="mb-2 block text-xs font-medium text-gray-500"
+                                >
+                                    Pie de imagen
+                                </label>
+
+                                <textarea
+                                    id="double-image-right-caption"
+                                    value={selectedBlock.props.rightCaption}
+                                    onChange={(event) =>
+                                        updateBlock(selectedBlock.id, {
+                                            rightCaption: event.target.value,
+                                        })
+                                    }
+                                    placeholder="Información sobre la imagen..."
+                                    className="min-h-[80px] w-full resize-none rounded-lg border border-gray-200 p-3 text-sm leading-6 outline-none transition focus:border-gray-400"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {selectedBlock?.type === "text-image" && (
+                <div className="space-y-6">
+                    <div>
+                        <label
+                            htmlFor="text-image-text"
+                            className="mb-2 block text-xs font-medium text-gray-500"
+                        >
+                            Texto
+                        </label>
+
+                        <textarea
+                            id="text-image-text"
+                            value={selectedBlock.props.text}
+                            onChange={(event) =>
+                                updateBlock(selectedBlock.id, {
+                                    text: event.target.value,
+                                })
+                            }
+                            className="min-h-[160px] w-full resize-none rounded-lg border border-gray-200 p-3 text-sm leading-6 outline-none transition focus:border-gray-400"
+                        />
+                    </div>
+
+                    <div>
+                        <p className="mb-3 text-xs font-medium text-gray-500">
+                            Posición de la imagen
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-2">
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    updateBlock(selectedBlock.id, {
+                                        imagePosition: "left",
+                                    })
+                                }
+                                className={`rounded-lg border px-3 py-3 text-sm transition ${selectedBlock.props.imagePosition === "left"
+                                        ? "border-gray-900 bg-gray-50 font-medium"
+                                        : "border-gray-200 hover:bg-gray-50"
+                                    }`}
+                            >
+                                ← Izquierda
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    updateBlock(selectedBlock.id, {
+                                        imagePosition: "right",
+                                    })
+                                }
+                                className={`rounded-lg border px-3 py-3 text-sm transition ${selectedBlock.props.imagePosition === "right"
+                                        ? "border-gray-900 bg-gray-50 font-medium"
+                                        : "border-gray-200 hover:bg-gray-50"
+                                    }`}
+                            >
+                                Derecha →
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-gray-100 pt-6">
+                        <label
+                            htmlFor="text-image-image"
+                            className="mb-2 block text-xs font-medium text-gray-500"
+                        >
+                            Imagen
+                        </label>
+
+                        <input
+                            id="text-image-image"
+                            type="file"
+                            accept="image/*"
+                            onChange={(event) => {
+                                const file = event.target.files?.[0];
+
+                                if (!file) {
+                                    return;
+                                }
+
+                                const imageUrl = URL.createObjectURL(file);
+
+                                updateBlock(selectedBlock.id, {
+                                    imageSrc: imageUrl,
+                                });
+                            }}
+                            className="w-full text-sm"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="text-image-caption"
+                            className="mb-2 block text-xs font-medium text-gray-500"
+                        >
+                            Pie de imagen
+                        </label>
+
+                        <textarea
+                            id="text-image-caption"
+                            value={selectedBlock.props.imageCaption}
+                            onChange={(event) =>
+                                updateBlock(selectedBlock.id, {
+                                    imageCaption: event.target.value,
+                                })
+                            }
+                            placeholder="Información sobre la imagen..."
+                            className="min-h-[80px] w-full resize-none rounded-lg border border-gray-200 p-3 text-sm leading-6 outline-none transition focus:border-gray-400"
+                        />
+                    </div>
+                </div>
+            )}
         </aside>
     );
 }

@@ -3,6 +3,8 @@ import ParagraphBlock from "./blocks/ParagraphBlock";
 import DividerBlock from "./blocks/DividerBlock";
 import QuoteBlock from "./blocks/QuoteBlock";
 import ImageBlock from "./blocks/ImageBlock";
+import DoubleImageBlock from "./blocks/DoubleImageBlock";
+import TextImageBlock from "./blocks/TextImageBlock";
 import { NewsletterBlock } from "./blocks/types";
 
 type CanvasProps = {
@@ -39,22 +41,24 @@ export default function Canvas({
                     return (
                         <div
                             key={block.id}
-                            onClick={() => setSelectedBlockId(block.id)}
-                            className={`cursor-pointer rounded-lg p-2 transition ${isSelected
-                                    ? "outline outline-2 outline-offset-2 outline-pink-400"
-                                    : "outline-none"
-                                }`}
+
+onClick={() => setSelectedBlockId(block.id)}
+
+className={`min-w-0 max-w-full overflow-hidden cursor-pointer rounded-lg p-2 transition ${isSelected
+  ? "outline outline-2 outline-offset-2 outline-pink-400"
+  : "outline-none"
+}`}
                         >
                             {block.type === "heading" && (
                                 <HeadingBlock text={block.props.text} />
                             )}
 
                             {block.type === "paragraph" && (
-  <ParagraphBlock
-    text={block.props.text}
-    links={block.props.links}
-  />
-)}
+                                <ParagraphBlock
+                                    text={block.props.text}
+                                    links={block.props.links}
+                                />
+                            )}
 
                             {block.type === "divider" && <DividerBlock />}
 
@@ -68,6 +72,22 @@ export default function Canvas({
                                 <ImageBlock
                                     src={block.props.src}
                                     caption={block.props.caption}
+                                />
+                            )}
+                            {block.type === "double-image" && (
+                                <DoubleImageBlock
+                                    leftSrc={block.props.leftSrc}
+                                    leftCaption={block.props.leftCaption}
+                                    rightSrc={block.props.rightSrc}
+                                    rightCaption={block.props.rightCaption}
+                                />
+                            )}
+                            {block.type === "text-image" && (
+                                <TextImageBlock
+                                    text={block.props.text}
+                                    imageSrc={block.props.imageSrc}
+                                    imageCaption={block.props.imageCaption}
+                                    imagePosition={block.props.imagePosition}
                                 />
                             )}
                         </div>
