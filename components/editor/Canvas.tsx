@@ -50,6 +50,12 @@ export default function Canvas({
                   {block.props.text}
                 </p>
               )}
+
+              {block.type === "divider" && (
+                <div className="py-4">
+                  <div className="h-px w-full bg-gray-200" />
+                </div>
+              )}
             </div>
           );
         })}
