@@ -9,15 +9,7 @@ import Properties from "@/components/editor/Properties";
 import StatusBar from "@/components/editor/StatusBar";
 
 export default function EditorPage() {
-  const [blocks, setBlocks] = useState([
-    {
-      id: crypto.randomUUID(),
-      type: "heading",
-      props: {
-        text: "Bienvenidas a Femiciencia",
-      },
-    },
-  ]);
+  const [blocks, setBlocks] = useState<any[]>([]);
 
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
@@ -59,12 +51,32 @@ export default function EditorPage() {
     setSelectedBlockId(newBlock.id);
   };
 
+  const addParagraph = () => {
+    const newBlock = {
+      id: crypto.randomUUID(),
+      type: "paragraph",
+      props: {
+        text: "Escribí aquí el contenido de tu newsletter.",
+      },
+    };
+
+    setBlocks((currentBlocks) => [
+      ...currentBlocks,
+      newBlock,
+    ]);
+
+    setSelectedBlockId(newBlock.id);
+  };
+
   return (
     <div className="flex h-screen flex-col bg-[#F8F8F7]">
       <Header />
 
       <main className="flex flex-1 overflow-hidden">
-        <Sidebar onAddHeading={addHeading} />
+        <Sidebar
+          onAddHeading={addHeading}
+          onAddParagraph={addParagraph}
+        />
 
         <Canvas
           blocks={blocks}

@@ -49,6 +49,28 @@ export default function Properties({
           />
         </div>
       )}
+
+      {selectedBlock?.type === "paragraph" && (
+        <div>
+          <label
+            htmlFor="paragraph-text"
+            className="mb-2 block text-sm font-medium"
+          >
+            Texto
+          </label>
+
+          <textarea
+            id="paragraph-text"
+            value={selectedBlock.props.text}
+            onChange={(event) =>
+              updateBlock(selectedBlock.id, {
+                text: event.target.value,
+              })
+            }
+            className="min-h-[180px] w-full resize-none rounded-lg border border-gray-200 p-3 text-sm leading-6 outline-none transition focus:border-gray-400"
+          />
+        </div>
+      )}
     </aside>
   );
 }
