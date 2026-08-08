@@ -8,8 +8,11 @@ import Canvas from "@/components/editor/Canvas";
 import Properties from "@/components/editor/Properties";
 import StatusBar from "@/components/editor/StatusBar";
 
+import { createBlock } from "@/components/editor/blocks/blockFactory";
+import { NewsletterBlock } from "@/components/editor/blocks/types";
+
 export default function EditorPage() {
-  const [blocks, setBlocks] = useState<any[]>([]);
+  const [blocks, setBlocks] = useState<NewsletterBlock[]>([]);
 
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
@@ -34,64 +37,10 @@ export default function EditorPage() {
     );
   };
 
-  const addHeading = () => {
-    const newBlock = {
-      id: crypto.randomUUID(),
-      type: "heading",
-      props: {
-        text: "Nuevo título",
-      },
-    };
-
-    setBlocks((currentBlocks) => [
-      ...currentBlocks,
-      newBlock,
-    ]);
-
-    setSelectedBlockId(newBlock.id);
-  };
-
-  const addParagraph = () => {
-    const newBlock = {
-      id: crypto.randomUUID(),
-      type: "paragraph",
-      props: {
-        text: "Escribí aquí el contenido de tu newsletter.",
-      },
-    };
-
-    setBlocks((currentBlocks) => [
-      ...currentBlocks,
-      newBlock,
-    ]);
-
-    setSelectedBlockId(newBlock.id);
-  };
-
-  const addDivider = () => {
-    const newBlock = {
-      id: crypto.randomUUID(),
-      type: "divider",
-      props: {},
-    };
-
-    setBlocks((currentBlocks) => [
-      ...currentBlocks,
-      newBlock,
-    ]);
-
-    setSelectedBlockId(newBlock.id);
-  };
-
-  const addQuote = () => {
-    const newBlock = {
-      id: crypto.randomUUID(),
-      type: "quote",
-      props: {
-        text: "Escribí aquí una cita.",
-        author: "Autor",
-      },
-    };
+  const addBlock = (
+  type: "heading" | "paragraph" | "divider" | "quote" | "image"
+) => {
+    const newBlock = createBlock(type);
 
     setBlocks((currentBlocks) => [
       ...currentBlocks,
@@ -107,10 +56,11 @@ export default function EditorPage() {
 
       <main className="flex flex-1 overflow-hidden">
         <Sidebar
-          onAddHeading={addHeading}
-          onAddParagraph={addParagraph}
-          onAddDivider={addDivider}
-          onAddQuote={addQuote}
+          onAddHeading={() => addBlock("heading")}
+          onAddParagraph={() => addBlock("paragraph")}
+          onAddDivider={() => addBlock("divider")}
+          onAddQuote={() => addBlock("quote")}
+          onAddImage={() => addBlock("image")}
         />
 
         <Canvas
