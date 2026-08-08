@@ -56,6 +56,18 @@ export default function Canvas({
                   <div className="h-px w-full bg-gray-200" />
                 </div>
               )}
+
+              {block.type === "quote" && (
+                <blockquote className="border-l-4 border-gray-300 py-2 pl-5">
+                  <p className="text-lg italic leading-7 text-gray-700">
+                    “{block.props.text}”
+                  </p>
+
+                  <footer className="mt-3 text-sm text-gray-400">
+                    — {block.props.author}
+                  </footer>
+                </blockquote>
+              )}
             </div>
           );
         })}

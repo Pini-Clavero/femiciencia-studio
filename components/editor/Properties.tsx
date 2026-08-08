@@ -71,6 +71,51 @@ export default function Properties({
           />
         </div>
       )}
+
+      {selectedBlock?.type === "quote" && (
+        <div className="space-y-5">
+          <div>
+            <label
+              htmlFor="quote-text"
+              className="mb-2 block text-sm font-medium"
+            >
+              Cita
+            </label>
+
+            <textarea
+              id="quote-text"
+              value={selectedBlock.props.text}
+              onChange={(event) =>
+                updateBlock(selectedBlock.id, {
+                  text: event.target.value,
+                })
+              }
+              className="min-h-[140px] w-full resize-none rounded-lg border border-gray-200 p-3 text-sm leading-6 outline-none transition focus:border-gray-400"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="quote-author"
+              className="mb-2 block text-sm font-medium"
+            >
+              Autor
+            </label>
+
+            <input
+              id="quote-author"
+              type="text"
+              value={selectedBlock.props.author}
+              onChange={(event) =>
+                updateBlock(selectedBlock.id, {
+                  author: event.target.value,
+                })
+              }
+              className="w-full rounded-lg border border-gray-200 p-3 text-sm outline-none transition focus:border-gray-400"
+            />
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

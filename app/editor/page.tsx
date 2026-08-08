@@ -83,6 +83,24 @@ export default function EditorPage() {
     setSelectedBlockId(newBlock.id);
   };
 
+  const addQuote = () => {
+    const newBlock = {
+      id: crypto.randomUUID(),
+      type: "quote",
+      props: {
+        text: "Escribí aquí una cita.",
+        author: "Autor",
+      },
+    };
+
+    setBlocks((currentBlocks) => [
+      ...currentBlocks,
+      newBlock,
+    ]);
+
+    setSelectedBlockId(newBlock.id);
+  };
+
   return (
     <div className="flex h-screen flex-col bg-[#F8F8F7]">
       <Header />
@@ -92,6 +110,7 @@ export default function EditorPage() {
           onAddHeading={addHeading}
           onAddParagraph={addParagraph}
           onAddDivider={addDivider}
+          onAddQuote={addQuote}
         />
 
         <Canvas
