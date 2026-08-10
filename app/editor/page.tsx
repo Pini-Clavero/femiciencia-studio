@@ -11,6 +11,15 @@ import StatusBar from "@/components/editor/StatusBar";
 import { createBlock } from "@/components/editor/blocks/blockFactory";
 import { NewsletterBlock } from "@/components/editor/blocks/types";
 
+type BlockType =
+  | "heading"
+  | "paragraph"
+  | "divider"
+  | "quote"
+  | "image"
+  | "double-image"
+  | "text-image";
+
 export default function EditorPage() {
   const [blocks, setBlocks] = useState<NewsletterBlock[]>([]);
 
@@ -38,39 +47,24 @@ export default function EditorPage() {
   };
 
   const addBlock = (
-    type:
-      | "heading"
-      | "paragraph"
-      | "divider"
-      | "quote"
-      | "image"
-      | "double-image"
-      | "text-image",
+    type: BlockType,
     afterBlockId?: string
   ) => {
     const newBlock = createBlock(type);
 
     setBlocks((currentBlocks) => {
-      // Si no indicamos un bloque de referencia,
-      // agregamos el nuevo bloque al final.
       if (!afterBlockId) {
         return [...currentBlocks, newBlock];
       }
 
-      // Buscamos la posición del bloque después
-      // del cual queremos insertar el nuevo bloque.
       const blockIndex = currentBlocks.findIndex(
         (block) => block.id === afterBlockId
       );
 
-      // Si no encontramos el bloque de referencia,
-      // mantenemos el comportamiento anterior.
       if (blockIndex === -1) {
         return [...currentBlocks, newBlock];
       }
 
-      // Insertamos el nuevo bloque inmediatamente
-      // después del bloque de referencia.
       return [
         ...currentBlocks.slice(0, blockIndex + 1),
         newBlock,
@@ -79,6 +73,50 @@ export default function EditorPage() {
     });
 
     setSelectedBlockId(newBlock.id);
+  };
+
+  const duplicateBlock = (blockId: string) => {
+    let duplicatedBlockId: string | null = null;
+
+    setBlocks((currentBlocks) => {
+      const blockIndex = currentBlocks.findIndex(
+        (block) => block.id === blockId
+      );
+
+      if (blockIndex === -1) {
+        return currentBlocks;
+      }
+
+      const originalBlock = currentBlocks[blockIndex];
+
+      const duplicatedBlock: NewsletterBlock = {
+        ...originalBlock,
+        id: crypto.randomUUID(),
+        props: {
+          ...originalBlock.props,
+        },
+      };
+
+      duplicatedBlockId = duplicatedBlock.id;
+
+      return [
+        ...currentBlocks.slice(0, blockIndex + 1),
+        duplicatedBlock,
+        ...currentBlocks.slice(blockIndex + 1),
+      ];
+    });
+
+    if (duplicatedBlockId) {
+      setSelectedBlockId(duplicatedBlockId);
+    }
+  };
+
+  const deleteBlock = (blockId: string) => {
+    setBlocks((currentBlocks) =>
+      currentBlocks.filter((block) => block.id !== blockId)
+    );
+
+    setSelectedBlockId(null);
   };
 
   return (
@@ -97,11 +135,13 @@ export default function EditorPage() {
         />
 
         <Canvas
-  blocks={blocks}
-  selectedBlockId={selectedBlockId}
-  setSelectedBlockId={setSelectedBlockId}
-  onAddBlock={addBlock}
-/>
+          blocks={blocks}
+          selectedBlockId={selectedBlockId}
+          setSelectedBlockId={setSelectedBlockId}
+          onAddBlock={addBlock}
+          onDuplicateBlock={duplicateBlock}
+          onDeleteBlock={deleteBlock}
+        />
 
         <Properties
           selectedBlockId={selectedBlockId}

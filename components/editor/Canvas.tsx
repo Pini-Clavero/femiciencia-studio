@@ -25,6 +25,8 @@ type CanvasProps = {
   selectedBlockId: string | null;
   setSelectedBlockId: (id: string) => void;
   onAddBlock: (type: BlockType, afterBlockId?: string) => void;
+  onDuplicateBlock: (blockId: string) => void;
+  onDeleteBlock: (blockId: string) => void;
 };
 
 export default function Canvas({
@@ -32,6 +34,8 @@ export default function Canvas({
   selectedBlockId,
   setSelectedBlockId,
   onAddBlock,
+  onDuplicateBlock,
+  onDeleteBlock,
 }: CanvasProps) {
   const [insertAfterBlockId, setInsertAfterBlockId] = useState<string | null>(
     null
@@ -58,7 +62,7 @@ export default function Canvas({
               </p>
 
               <p className="mt-2 text-sm text-gray-400">
-                Elegí un bloque de la biblioteca para comenzar a crear.
+                Elegí un bloque de la biblioteca para comenzar.
               </p>
             </div>
           </div>
@@ -124,6 +128,32 @@ export default function Canvas({
                   />
                 )}
               </div>
+
+              {isSelected && (
+                <div className="flex justify-center gap-2 py-2">
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDuplicateBlock(block.id);
+                    }}
+                    className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm transition hover:border-gray-300 hover:bg-gray-50"
+                  >
+                    Duplicar
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDeleteBlock(block.id);
+                    }}
+                    className="rounded-md border border-red-200 bg-white px-3 py-1.5 text-xs font-medium text-red-500 shadow-sm transition hover:bg-red-50"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              )}
 
               {/* BOTÓN + */}
               <div className="relative flex justify-center py-2">
