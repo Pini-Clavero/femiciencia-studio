@@ -1,25 +1,51 @@
 type ImageBlockProps = {
-  src: string;
-  caption: string;
+    src: string;
+    caption: string;
+    alignment?: "left" | "center" | "right";
+    width?: number;
 };
 
 export default function ImageBlock({
-  src,
-  caption,
+    src,
+    caption,
+    alignment = "center",
+    width = 300,
 }: ImageBlockProps) {
-  return (
-    <figure className="flex flex-col items-center">
-      <img
-        src={src}
-        alt={caption}
-        className="max-h-[300px] w-auto max-w-full object-contain"
-      />
+    return (
+        <figure
+            className="flex w-full flex-col"
+            style={{
+                alignItems:
+                    alignment === "left"
+                        ? "flex-start"
+                        : alignment === "right"
+                        ? "flex-end"
+                        : "center",
+            }}
+        >
+            <img
+                src={src}
+                alt={caption}
+                style={{
+                    width: `${width}px`,
+                    maxWidth: "100%",
+                    height: "auto",
+                    objectFit: "contain",
+                }}
+            />
 
-      {caption && (
-        <figcaption className="mt-2 text-center text-xs leading-5 text-gray-400">
-          {caption}
-        </figcaption>
-      )}
-    </figure>
-  );
+            {caption && (
+                <figcaption
+                    className="mt-2 text-xs leading-5 text-gray-400"
+                    style={{
+                        width: `${width}px`,
+                        maxWidth: "100%",
+                        textAlign: alignment,
+                    }}
+                >
+                    {caption}
+                </figcaption>
+            )}
+        </figure>
+    );
 }

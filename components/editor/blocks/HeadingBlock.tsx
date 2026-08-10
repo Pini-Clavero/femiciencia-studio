@@ -1,16 +1,21 @@
 type HeadingBlockProps = {
-  text: string;
+    text: string;
+    alignment?: "left" | "center" | "right";
 };
 
 export default function HeadingBlock({
-  text,
+    text,
+    alignment = "left",
 }: HeadingBlockProps) {
-  return (
-    <h1
-  className="break-words text-4xl font-bold"
-  style={{ overflowWrap: "anywhere" }}
->
-  {text}
-</h1>
-  );
+    return (
+        <h1
+            className="break-words text-4xl font-bold"
+            style={{
+                overflowWrap: "anywhere",
+                textAlign: alignment,
+            }}
+        >
+            {text}
+        </h1>
+    );
 }

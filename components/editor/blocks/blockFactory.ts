@@ -10,6 +10,7 @@ export function createBlock(type: BlockType): NewsletterBlock {
                 type,
                 props: {
                     text: "Nuevo título",
+                    alignment: "left",
                 },
             };
 
@@ -20,6 +21,7 @@ export function createBlock(type: BlockType): NewsletterBlock {
                 props: {
                     text: "Escribí aquí el contenido de tu newsletter.",
                     links: [],
+                    alignment: "left",
                 },
             };
 
@@ -27,7 +29,9 @@ export function createBlock(type: BlockType): NewsletterBlock {
             return {
                 id,
                 type,
-                props: {},
+                props: {
+                    style: "solid",
+                },
             };
 
         case "quote":
@@ -38,6 +42,7 @@ export function createBlock(type: BlockType): NewsletterBlock {
                     text: "Escribí aquí una cita.",
                     author: "Autor",
                     links: [],
+                    alignment: "left",
                 },
             };
 
@@ -48,8 +53,11 @@ export function createBlock(type: BlockType): NewsletterBlock {
                 props: {
                     src: "",
                     caption: "",
+                    alignment: "center",
+                    width: 300,
                 },
             };
+
         case "double-image":
             return {
                 id,
@@ -59,8 +67,10 @@ export function createBlock(type: BlockType): NewsletterBlock {
                     leftCaption: "",
                     rightSrc: "",
                     rightCaption: "",
+                    gap: 16,
                 },
             };
+
         case "text-image":
             return {
                 id,
@@ -70,6 +80,7 @@ export function createBlock(type: BlockType): NewsletterBlock {
                     imageSrc: "",
                     imageCaption: "",
                     imagePosition: "right",
+                    imageWidth: 220,
                 },
             };
     }
