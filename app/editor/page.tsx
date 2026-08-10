@@ -97,10 +97,11 @@ export default function EditorPage() {
         />
 
         <Canvas
-          blocks={blocks}
-          selectedBlockId={selectedBlockId}
-          setSelectedBlockId={setSelectedBlockId}
-        />
+  blocks={blocks}
+  selectedBlockId={selectedBlockId}
+  setSelectedBlockId={setSelectedBlockId}
+  onAddBlock={addBlock}
+/>
 
         <Properties
           selectedBlockId={selectedBlockId}
