@@ -27,6 +27,10 @@ type CanvasProps = {
   onAddBlock: (type: BlockType, afterBlockId?: string) => void;
   onDuplicateBlock: (blockId: string) => void;
   onDeleteBlock: (blockId: string) => void;
+  onMoveBlock: (
+    draggedBlockId: string,
+    targetBlockId: string
+  ) => void;
 };
 
 export default function Canvas({
@@ -36,10 +40,16 @@ export default function Canvas({
   onAddBlock,
   onDuplicateBlock,
   onDeleteBlock,
+  onMoveBlock,
 }: CanvasProps) {
-  const [insertAfterBlockId, setInsertAfterBlockId] = useState<string | null>(
-    null
-  );
+  const [insertAfterBlockId, setInsertAfterBlockId] =
+    useState<string | null>(null);
+
+  const [draggedBlockId, setDraggedBlockId] =
+    useState<string | null>(null);
+
+  const [dragOverBlockId, setDragOverBlockId] =
+    useState<string | null>(null);
 
   const handleAddBlock = (type: BlockType) => {
     if (!insertAfterBlockId) {
@@ -48,6 +58,58 @@ export default function Canvas({
 
     onAddBlock(type, insertAfterBlockId);
     setInsertAfterBlockId(null);
+  };
+
+  const handleDragStart = (
+    event: React.DragEvent<HTMLDivElement>,
+    blockId: string
+  ) => {
+    setDraggedBlockId(blockId);
+
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", blockId);
+  };
+
+  const handleDragOver = (
+    event: React.DragEvent<HTMLDivElement>,
+    blockId: string
+  ) => {
+    event.preventDefault();
+
+    if (!draggedBlockId || draggedBlockId === blockId) {
+      return;
+    }
+
+    event.dataTransfer.dropEffect = "move";
+
+    setDragOverBlockId(blockId);
+  };
+
+  const handleDrop = (
+    event: React.DragEvent<HTMLDivElement>,
+    targetBlockId: string
+  ) => {
+    event.preventDefault();
+
+    const draggedId =
+      event.dataTransfer.getData("text/plain") ||
+      draggedBlockId;
+
+    if (!draggedId || draggedId === targetBlockId) {
+      setDraggedBlockId(null);
+      setDragOverBlockId(null);
+      return;
+    }
+
+    onMoveBlock(draggedId, targetBlockId);
+
+    setDraggedBlockId(null);
+    setDragOverBlockId(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedBlockId(null);
+    setDragOverBlockId(null);
   };
 
   return (
@@ -70,21 +132,68 @@ export default function Canvas({
 
         {blocks.map((block) => {
           const isSelected = selectedBlockId === block.id;
-          const isInsertMenuOpen = insertAfterBlockId === block.id;
+          const isInsertMenuOpen =
+            insertAfterBlockId === block.id;
+          const isDragged = draggedBlockId === block.id;
+          const isDragOver = dragOverBlockId === block.id;
 
           return (
-            <div key={block.id}>
+            <div
+              key={block.id}
+              onDragOver={(event) =>
+                handleDragOver(event, block.id)
+              }
+              onDrop={(event) =>
+                handleDrop(event, block.id)
+              }
+              className="relative"
+            >
+
+              {/* INDICADOR DE POSICIÓN */}
+              {isDragOver && (
+                <div className="absolute -top-1 left-0 right-0 z-20 h-1 rounded-full bg-pink-400" />
+              )}
 
               <div
-                onClick={() => setSelectedBlockId(block.id)}
+                onClick={() =>
+                  setSelectedBlockId(block.id)
+                }
                 className={`min-w-0 max-w-full overflow-hidden cursor-pointer rounded-lg p-2 transition ${
                   isSelected
                     ? "outline outline-2 outline-offset-2 outline-pink-400"
                     : "outline-none"
+                } ${
+                  isDragged
+                    ? "opacity-40"
+                    : "opacity-100"
                 }`}
               >
+
+                {/* HANDLE DE ARRASTRE */}
+                <div className="mb-1 flex h-5 items-center">
+                  <div
+                    draggable
+                    onDragStart={(event) =>
+                      handleDragStart(
+                        event,
+                        block.id
+                      )
+                    }
+                    onDragEnd={handleDragEnd}
+                    onClick={(event) =>
+                      event.stopPropagation()
+                    }
+                    className="flex h-5 w-7 cursor-grab items-center justify-center rounded text-gray-300 transition hover:bg-gray-100 hover:text-gray-500 active:cursor-grabbing"
+                    title="Arrastrar bloque"
+                  >
+                    ⋮⋮
+                  </div>
+                </div>
+
                 {block.type === "heading" && (
-                  <HeadingBlock text={block.props.text} />
+                  <HeadingBlock
+                    text={block.props.text}
+                  />
                 )}
 
                 {block.type === "paragraph" && (
@@ -94,7 +203,9 @@ export default function Canvas({
                   />
                 )}
 
-                {block.type === "divider" && <DividerBlock />}
+                {block.type === "divider" && (
+                  <DividerBlock />
+                )}
 
                 {block.type === "quote" && (
                   <QuoteBlock
@@ -103,12 +214,13 @@ export default function Canvas({
                   />
                 )}
 
-                {block.type === "image" && block.props.src && (
-                  <ImageBlock
-                    src={block.props.src}
-                    caption={block.props.caption}
-                  />
-                )}
+                {block.type === "image" &&
+                  block.props.src && (
+                    <ImageBlock
+                      src={block.props.src}
+                      caption={block.props.caption}
+                    />
+                  )}
 
                 {block.type === "double-image" && (
                   <DoubleImageBlock
@@ -123,12 +235,17 @@ export default function Canvas({
                   <TextImageBlock
                     text={block.props.text}
                     imageSrc={block.props.imageSrc}
-                    imageCaption={block.props.imageCaption}
-                    imagePosition={block.props.imagePosition}
+                    imageCaption={
+                      block.props.imageCaption
+                    }
+                    imagePosition={
+                      block.props.imagePosition
+                    }
                   />
                 )}
               </div>
 
+              {/* ACCIONES DEL BLOQUE */}
               {isSelected && (
                 <div className="flex justify-center gap-2 py-2">
                   <button
@@ -163,7 +280,9 @@ export default function Canvas({
                     event.stopPropagation();
 
                     setInsertAfterBlockId(
-                      isInsertMenuOpen ? null : block.id
+                      isInsertMenuOpen
+                        ? null
+                        : block.id
                     );
                   }}
                   className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 bg-white text-lg text-gray-500 shadow-sm transition hover:border-pink-400 hover:bg-pink-50 hover:text-pink-500"
@@ -181,7 +300,9 @@ export default function Canvas({
 
                     <button
                       type="button"
-                      onClick={() => handleAddBlock("heading")}
+                      onClick={() =>
+                        handleAddBlock("heading")
+                      }
                       className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
                     >
                       Título
@@ -189,7 +310,9 @@ export default function Canvas({
 
                     <button
                       type="button"
-                      onClick={() => handleAddBlock("paragraph")}
+                      onClick={() =>
+                        handleAddBlock("paragraph")
+                      }
                       className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
                     >
                       Párrafo
@@ -197,7 +320,9 @@ export default function Canvas({
 
                     <button
                       type="button"
-                      onClick={() => handleAddBlock("quote")}
+                      onClick={() =>
+                        handleAddBlock("quote")
+                      }
                       className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
                     >
                       Cita
@@ -205,7 +330,9 @@ export default function Canvas({
 
                     <button
                       type="button"
-                      onClick={() => handleAddBlock("divider")}
+                      onClick={() =>
+                        handleAddBlock("divider")
+                      }
                       className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
                     >
                       Separador
@@ -213,7 +340,9 @@ export default function Canvas({
 
                     <button
                       type="button"
-                      onClick={() => handleAddBlock("image")}
+                      onClick={() =>
+                        handleAddBlock("image")
+                      }
                       className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
                     >
                       Imagen
@@ -221,7 +350,11 @@ export default function Canvas({
 
                     <button
                       type="button"
-                      onClick={() => handleAddBlock("double-image")}
+                      onClick={() =>
+                        handleAddBlock(
+                          "double-image"
+                        )
+                      }
                       className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
                     >
                       Imagen doble
@@ -229,7 +362,11 @@ export default function Canvas({
 
                     <button
                       type="button"
-                      onClick={() => handleAddBlock("text-image")}
+                      onClick={() =>
+                        handleAddBlock(
+                          "text-image"
+                        )
+                      }
                       className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-50"
                     >
                       Texto + Imagen

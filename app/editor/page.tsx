@@ -119,6 +119,44 @@ export default function EditorPage() {
     setSelectedBlockId(null);
   };
 
+  const moveBlock = (
+    draggedBlockId: string,
+    targetBlockId: string
+  ) => {
+    setBlocks((currentBlocks) => {
+      const draggedIndex = currentBlocks.findIndex(
+        (block) => block.id === draggedBlockId
+      );
+
+      const targetIndex = currentBlocks.findIndex(
+        (block) => block.id === targetBlockId
+      );
+
+      if (draggedIndex === -1 || targetIndex === -1) {
+        return currentBlocks;
+      }
+
+      if (draggedIndex === targetIndex) {
+        return currentBlocks;
+      }
+
+      const newBlocks = [...currentBlocks];
+
+      const [draggedBlock] = newBlocks.splice(draggedIndex, 1);
+
+      const adjustedTargetIndex =
+        draggedIndex < targetIndex
+          ? targetIndex - 1
+          : targetIndex;
+
+      newBlocks.splice(adjustedTargetIndex, 0, draggedBlock);
+
+      return newBlocks;
+    });
+
+    setSelectedBlockId(draggedBlockId);
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -141,6 +179,7 @@ export default function EditorPage() {
           onAddBlock={addBlock}
           onDuplicateBlock={duplicateBlock}
           onDeleteBlock={deleteBlock}
+          onMoveBlock={moveBlock}
         />
 
         <Properties
