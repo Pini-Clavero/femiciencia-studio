@@ -1,15 +1,19 @@
 type HeaderProps = {
   isSaving: boolean;
+  title: string;
+  volume: string;
+  date: string;
 };
 
 export default function Header({
   isSaving,
+  title,
+  volume,
+  date,
 }: HeaderProps) {
   return (
     <header className="flex h-16 items-center justify-between border-b bg-white px-6">
-
       <div className="flex items-center gap-4">
-
         <button
           type="button"
           className="text-xl text-gray-500 transition hover:text-gray-900"
@@ -17,9 +21,15 @@ export default function Header({
           ←
         </button>
 
-        <h1 className="font-semibold">
-          Edición XXX
-        </h1>
+        <div>
+          <h1 className="font-semibold">
+            {title}
+          </h1>
+
+          <p className="text-xs text-gray-400">
+            Volumen {volume} · {date}
+          </p>
+        </div>
 
         <span
           className={`text-sm ${
@@ -32,11 +42,9 @@ export default function Header({
             ? "Guardando..."
             : "✓ Guardado automáticamente"}
         </span>
-
       </div>
 
       <div className="flex items-center gap-3">
-
         <button
           type="button"
           className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600"
@@ -64,9 +72,7 @@ export default function Header({
         >
           Publicar
         </button>
-
       </div>
-
     </header>
   );
 }

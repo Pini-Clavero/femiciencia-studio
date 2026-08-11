@@ -9,23 +9,28 @@ import Properties from "@/components/editor/Properties";
 import StatusBar from "@/components/editor/StatusBar";
 
 import { createBlock } from "@/components/editor/blocks/blockFactory";
-import { NewsletterBlock } from "@/components/editor/blocks/types";
-
-type BlockType =
-  | "heading"
-  | "paragraph"
-  | "divider"
-  | "quote"
-  | "image"
-  | "double-image"
-  | "text-image";
+import {
+  Newsletter,
+  NewsletterBlock,
+  BlockType,
+} from "@/components/editor/blocks/types";
 
 const STORAGE_KEY = "femiciencia-studio-newsletter";
 
-export default function EditorPage() {
-  const [blocks, setBlocks] = useState<NewsletterBlock[]>([]);
+const createInitialNewsletter = (): Newsletter => ({
+  id: crypto.randomUUID(),
+  title: "Nuevo newsletter",
+  volume: "XXX",
+  date: new Date().toISOString().split("T")[0],
+  blocks: [],
+});
 
-  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+export default function EditorPage() {
+  const [newsletter, setNewsletter] =
+    useState<Newsletter | null>(null);
+
+  const [selectedBlockId, setSelectedBlockId] =
+    useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -36,20 +41,45 @@ export default function EditorPage() {
    */
   useEffect(() => {
     try {
-      const savedNewsletter = localStorage.getItem(STORAGE_KEY);
+      const savedNewsletter =
+        localStorage.getItem(STORAGE_KEY);
 
       if (savedNewsletter) {
-        const parsedBlocks = JSON.parse(savedNewsletter);
+        const parsedData = JSON.parse(savedNewsletter);
 
-        if (Array.isArray(parsedBlocks)) {
-          setBlocks(parsedBlocks);
+        /*
+         * Compatibilidad con el formato anterior:
+         *
+         * Antes:
+         * NewsletterBlock[]
+         *
+         * Ahora:
+         * Newsletter
+         */
+        if (Array.isArray(parsedData)) {
+          setNewsletter({
+            ...createInitialNewsletter(),
+            blocks: parsedData,
+          });
+        } else if (
+          parsedData &&
+          typeof parsedData === "object" &&
+          Array.isArray(parsedData.blocks)
+        ) {
+          setNewsletter(parsedData);
+        } else {
+          setNewsletter(createInitialNewsletter());
         }
+      } else {
+        setNewsletter(createInitialNewsletter());
       }
     } catch (error) {
       console.error(
         "No se pudo cargar el newsletter guardado:",
         error
       );
+
+      setNewsletter(createInitialNewsletter());
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +89,7 @@ export default function EditorPage() {
    * GUARDADO AUTOMÁTICO
    */
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading || !newsletter) {
       return;
     }
 
@@ -69,7 +99,7 @@ export default function EditorPage() {
       try {
         localStorage.setItem(
           STORAGE_KEY,
-          JSON.stringify(blocks)
+          JSON.stringify(newsletter)
         );
 
         setIsSaving(false);
@@ -86,27 +116,34 @@ export default function EditorPage() {
     return () => {
       window.clearTimeout(saveTimeout);
     };
-  }, [blocks, isLoading]);
+  }, [newsletter, isLoading]);
 
   const updateBlock = (
     blockId: string,
     updatedProps: Record<string, any>
   ) => {
-    setBlocks((currentBlocks) =>
-      currentBlocks.map((block) => {
-        if (block.id !== blockId) {
-          return block;
-        }
+    setNewsletter((currentNewsletter) => {
+      if (!currentNewsletter) {
+        return currentNewsletter;
+      }
 
-        return {
-          ...block,
-          props: {
-            ...block.props,
-            ...updatedProps,
-          },
-        };
-      })
-    );
+      return {
+        ...currentNewsletter,
+        blocks: currentNewsletter.blocks.map((block) => {
+          if (block.id !== blockId) {
+            return block;
+          }
+
+          return {
+            ...block,
+            props: {
+              ...block.props,
+              ...updatedProps,
+            },
+          };
+        }),
+      };
+    });
   };
 
   const addBlock = (
@@ -115,9 +152,18 @@ export default function EditorPage() {
   ) => {
     const newBlock = createBlock(type);
 
-    setBlocks((currentBlocks) => {
+    setNewsletter((currentNewsletter) => {
+      if (!currentNewsletter) {
+        return currentNewsletter;
+      }
+
+      const currentBlocks = currentNewsletter.blocks;
+
       if (!afterBlockId) {
-        return [...currentBlocks, newBlock];
+        return {
+          ...currentNewsletter,
+          blocks: [...currentBlocks, newBlock],
+        };
       }
 
       const blockIndex = currentBlocks.findIndex(
@@ -125,14 +171,20 @@ export default function EditorPage() {
       );
 
       if (blockIndex === -1) {
-        return [...currentBlocks, newBlock];
+        return {
+          ...currentNewsletter,
+          blocks: [...currentBlocks, newBlock],
+        };
       }
 
-      return [
-        ...currentBlocks.slice(0, blockIndex + 1),
-        newBlock,
-        ...currentBlocks.slice(blockIndex + 1),
-      ];
+      return {
+        ...currentNewsletter,
+        blocks: [
+          ...currentBlocks.slice(0, blockIndex + 1),
+          newBlock,
+          ...currentBlocks.slice(blockIndex + 1),
+        ],
+      };
     });
 
     setSelectedBlockId(newBlock.id);
@@ -141,13 +193,19 @@ export default function EditorPage() {
   const duplicateBlock = (blockId: string) => {
     let duplicatedBlockId: string | null = null;
 
-    setBlocks((currentBlocks) => {
+    setNewsletter((currentNewsletter) => {
+      if (!currentNewsletter) {
+        return currentNewsletter;
+      }
+
+      const currentBlocks = currentNewsletter.blocks;
+
       const blockIndex = currentBlocks.findIndex(
         (block) => block.id === blockId
       );
 
       if (blockIndex === -1) {
-        return currentBlocks;
+        return currentNewsletter;
       }
 
       const originalBlock = currentBlocks[blockIndex];
@@ -162,11 +220,14 @@ export default function EditorPage() {
 
       duplicatedBlockId = duplicatedBlock.id;
 
-      return [
-        ...currentBlocks.slice(0, blockIndex + 1),
-        duplicatedBlock,
-        ...currentBlocks.slice(blockIndex + 1),
-      ];
+      return {
+        ...currentNewsletter,
+        blocks: [
+          ...currentBlocks.slice(0, blockIndex + 1),
+          duplicatedBlock,
+          ...currentBlocks.slice(blockIndex + 1),
+        ],
+      };
     });
 
     if (duplicatedBlockId) {
@@ -175,11 +236,18 @@ export default function EditorPage() {
   };
 
   const deleteBlock = (blockId: string) => {
-    setBlocks((currentBlocks) =>
-      currentBlocks.filter(
-        (block) => block.id !== blockId
-      )
-    );
+    setNewsletter((currentNewsletter) => {
+      if (!currentNewsletter) {
+        return currentNewsletter;
+      }
+
+      return {
+        ...currentNewsletter,
+        blocks: currentNewsletter.blocks.filter(
+          (block) => block.id !== blockId
+        ),
+      };
+    });
 
     setSelectedBlockId(null);
   };
@@ -188,7 +256,13 @@ export default function EditorPage() {
     draggedBlockId: string,
     targetBlockId: string
   ) => {
-    setBlocks((currentBlocks) => {
+    setNewsletter((currentNewsletter) => {
+      if (!currentNewsletter) {
+        return currentNewsletter;
+      }
+
+      const currentBlocks = currentNewsletter.blocks;
+
       const draggedIndex = currentBlocks.findIndex(
         (block) => block.id === draggedBlockId
       );
@@ -201,11 +275,11 @@ export default function EditorPage() {
         draggedIndex === -1 ||
         targetIndex === -1
       ) {
-        return currentBlocks;
+        return currentNewsletter;
       }
 
       if (draggedIndex === targetIndex) {
-        return currentBlocks;
+        return currentNewsletter;
       }
 
       const newBlocks = [...currentBlocks];
@@ -224,13 +298,16 @@ export default function EditorPage() {
         draggedBlock
       );
 
-      return newBlocks;
+      return {
+        ...currentNewsletter,
+        blocks: newBlocks,
+      };
     });
 
     setSelectedBlockId(draggedBlockId);
   };
 
-  if (isLoading) {
+  if (isLoading || !newsletter) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <p className="text-sm text-gray-400">
@@ -242,7 +319,12 @@ export default function EditorPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header isSaving={isSaving} />
+      <Header
+        isSaving={isSaving}
+        title={newsletter.title}
+        volume={newsletter.volume}
+        date={newsletter.date}
+      />
 
       <main className="flex flex-1 overflow-hidden">
         <Sidebar
@@ -260,7 +342,7 @@ export default function EditorPage() {
         />
 
         <Canvas
-          blocks={blocks}
+          blocks={newsletter.blocks}
           selectedBlockId={selectedBlockId}
           setSelectedBlockId={setSelectedBlockId}
           onAddBlock={addBlock}
@@ -271,7 +353,7 @@ export default function EditorPage() {
 
         <Properties
           selectedBlockId={selectedBlockId}
-          blocks={blocks}
+          blocks={newsletter.blocks}
           updateBlock={updateBlock}
         />
       </main>
