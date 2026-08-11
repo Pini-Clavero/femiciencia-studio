@@ -118,6 +118,29 @@ export default function EditorPage() {
     };
   }, [newsletter, isLoading]);
 
+  /*
+   * ACTUALIZAR DATOS DEL NEWSLETTER
+   */
+  const updateNewsletter = (
+    updatedData: Partial<
+      Pick<Newsletter, "title" | "volume" | "date">
+    >
+  ) => {
+    setNewsletter((currentNewsletter) => {
+      if (!currentNewsletter) {
+        return currentNewsletter;
+      }
+
+      return {
+        ...currentNewsletter,
+        ...updatedData,
+      };
+    });
+  };
+
+  /*
+   * ACTUALIZAR PROPIEDADES DE UN BLOQUE
+   */
   const updateBlock = (
     blockId: string,
     updatedProps: Record<string, any>
@@ -146,6 +169,9 @@ export default function EditorPage() {
     });
   };
 
+  /*
+   * AGREGAR BLOQUE
+   */
   const addBlock = (
     type: BlockType,
     afterBlockId?: string
@@ -190,6 +216,9 @@ export default function EditorPage() {
     setSelectedBlockId(newBlock.id);
   };
 
+  /*
+   * DUPLICAR BLOQUE
+   */
   const duplicateBlock = (blockId: string) => {
     let duplicatedBlockId: string | null = null;
 
@@ -235,6 +264,9 @@ export default function EditorPage() {
     }
   };
 
+  /*
+   * ELIMINAR BLOQUE
+   */
   const deleteBlock = (blockId: string) => {
     setNewsletter((currentNewsletter) => {
       if (!currentNewsletter) {
@@ -252,6 +284,9 @@ export default function EditorPage() {
     setSelectedBlockId(null);
   };
 
+  /*
+   * MOVER BLOQUE
+   */
   const moveBlock = (
     draggedBlockId: string,
     targetBlockId: string
@@ -324,6 +359,7 @@ export default function EditorPage() {
         title={newsletter.title}
         volume={newsletter.volume}
         date={newsletter.date}
+        onUpdateNewsletter={updateNewsletter}
       />
 
       <main className="flex flex-1 overflow-hidden">
