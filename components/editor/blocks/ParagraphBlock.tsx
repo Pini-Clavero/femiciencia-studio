@@ -1,72 +1,75 @@
+"use client";
+
+import { useState } from "react";
+
+import InlineTextEditor from "./InlineTextEditor";
+import LinkedText from "./LinkedText";
+import { TextLink } from "./types";
+
 type ParagraphBlockProps = {
     text: string;
-    links?: {
-        id: string;
-        text: string;
-        url: string;
-    }[];
+    links?: TextLink[];
     alignment?: "left" | "center" | "right";
+    onChange?: (text: string) => void;
 };
 
 export default function ParagraphBlock({
     text,
     links = [],
     alignment = "left",
+    onChange,
 }: ParagraphBlockProps) {
-    const renderText = () => {
-        if (links.length === 0) {
-            return text;
-        }
+    const [isEditing, setIsEditing] =
+        useState(false);
 
-        let remainingText = text;
-        const parts: React.ReactNode[] = [];
-
-        links.forEach((link) => {
-            const index = remainingText.indexOf(link.text);
-
-            if (index === -1) {
-                return;
-            }
-
-            const before = remainingText.slice(0, index);
-
-            if (before) {
-                parts.push(before);
-            }
-
-            parts.push(
-                <a
-                    key={link.id}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                >
-                    {link.text}
-                </a>
-            );
-
-            remainingText = remainingText.slice(
-                index + link.text.length
-            );
-        });
-
-        if (remainingText) {
-            parts.push(remainingText);
-        }
-
-        return parts;
-    };
+    if (
+        isEditing &&
+        onChange
+    ) {
+        return (
+            <InlineTextEditor
+                value={text}
+                onChange={onChange}
+                onFinish={() =>
+                    setIsEditing(false)
+                }
+                multiline={true}
+                className="text-base leading-7 text-gray-700"
+                style={{
+                    overflowWrap:
+                        "anywhere",
+                    textAlign:
+                        alignment,
+                }}
+            />
+        );
+    }
 
     return (
         <p
+            onDoubleClick={(event) => {
+                event.stopPropagation();
+
+                if (onChange) {
+                    setIsEditing(true);
+                }
+            }}
             className="text-base leading-7 text-gray-700"
             style={{
-                overflowWrap: "anywhere",
-                textAlign: alignment,
+                overflowWrap:
+                    "anywhere",
+                textAlign:
+                    alignment,
+                cursor: onChange
+                    ? "text"
+                    : "default",
             }}
         >
-            {renderText()}
+            <LinkedText
+                text={text}
+                links={links}
+                field="text"
+            />
         </p>
     );
 }
