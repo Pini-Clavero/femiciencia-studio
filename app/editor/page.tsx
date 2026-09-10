@@ -93,6 +93,57 @@ export default function EditorPage() {
     }, []);
 
     /*
+     * Envio del news
+     */
+    const sendNewsletter = async () => {
+    if (!newsletter) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            "/api/newsletter/send",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/json",
+                },
+                body: JSON.stringify(
+                    newsletter
+                ),
+            }
+        );
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.error ||
+                    "No se pudo enviar el newsletter."
+            );
+        }
+
+        alert(
+            "Newsletter enviado correctamente."
+        );
+    } catch (error) {
+        console.error(
+            "Error al enviar newsletter:",
+            error
+        );
+
+        alert(
+            error instanceof Error
+                ? error.message
+                : "No se pudo enviar el newsletter."
+        );
+    }
+};
+
+
+    /*
      * GUARDADO AUTOMÁTICO
      */
     useEffect(() => {
@@ -410,6 +461,7 @@ const updateNewsletter = (
     volume={newsletter.volume}
     date={newsletter.date}
     onUpdateNewsletter={updateNewsletter}
+    blocks={newsletter.blocks}
 />
 
             <main className="flex min-h-0 flex-1 overflow-hidden">
